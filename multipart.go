@@ -9,13 +9,13 @@ import (
 
 
 func Bind(form *multipart.Form, target interface{}) error {
-	var multipartFields map[string][]string
+	multipartFields := map[string][]string{}
 
 	for fieldName, fieldValues := range form.Value {
 		multipartFields[fieldName] = fieldValues
 	}
 
-	var formHeaders map[string][]*multipart.FileHeader
+	formHeaders := map[string][]*multipart.FileHeader{}
 	for fieldName, fieldHeaders := range form.File {
 		formHeaders[fieldName] =  fieldHeaders
 	}
@@ -51,6 +51,7 @@ func Bind(form *multipart.Form, target interface{}) error {
 		if !ok {
 			return errors.Errorf("field %s is missing", tagValue)
 		}
+
 		structFieldValue.Set(reflect.ValueOf(formFieldValue[0]))
 	}
 	return nil
