@@ -7,18 +7,16 @@ import (
 
 	"github.com/piotrszyma/multipart"
 	"github.com/piotrszyma/multipart/pkg/formbuilder"
-
-	multipartlib "mime/multipart"
 )
 
-func TestBindMultipart_StringPointer_Ok(t *testing.T) {
+func TestBindMultipart_StringPointer_Binds(t *testing.T) {
 	// Arrange.
 	var formData struct {
 		StringPtr1 *string `multipart:"stringPtr1"`
 		StringPtr2 *string `multipart:"stringPtr2"`
 	}
 
-	formBuffer, boundary, err := formbuilder.
+	rawForm, err := formbuilder.
 		NewMultipart().
 		AddStringField("stringPtr1", "foo").
 		AddStringField("stringPtr2", "bar").
@@ -26,9 +24,7 @@ func TestBindMultipart_StringPointer_Ok(t *testing.T) {
 
 	require.NoError(t, err)
 
-	form, err := multipartlib.
-		NewReader(formBuffer, string(boundary)).
-		ReadForm(2048)
+	form, err := rawForm.IntoForm()
 	require.NoError(t, err)
 
 	// Act.
@@ -40,24 +36,20 @@ func TestBindMultipart_StringPointer_Ok(t *testing.T) {
 	require.Equal(t, "bar", *formData.StringPtr2)
 }
 
-func TestMultipartRequest_String_Ok(t *testing.T) {
+func TestMultipartRequest_String_Binds(t *testing.T) {
 	// Arrange.
 	var formData struct {
 		String1 string `multipart:"string1"`
 		String2 string `multipart:"string2"`
 	}
-
-	formBuffer, boundary, err := formbuilder.
+	rawForm, err := formbuilder.
 		NewMultipart().
 		AddStringField("string1", "foo").
 		AddStringField("string2", "bar").
 		Build()
-
 	require.NoError(t, err)
 
-	form, err := multipartlib.
-		NewReader(formBuffer, string(boundary)).
-		ReadForm(2048)
+	form, err := rawForm.IntoForm()
 	require.NoError(t, err)
 
 	// Act.

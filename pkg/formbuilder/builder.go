@@ -10,8 +10,9 @@ type boundary string
 type builder struct {
 	// form *multipart.Form
 	formWriter *multipart.Writer
-	buffer *bytes.Buffer
+	buffer     *bytes.Buffer
 }
+
 
 func NewMultipart() *builder {
 	buffer := bytes.Buffer{}
@@ -21,14 +22,17 @@ func NewMultipart() *builder {
 
 func (m *builder) AddStringField(fieldname, value string) *builder {
 	m.formWriter.WriteField(fieldname, value)
-	return m;
+	return m
 }
 
-func (m *builder) Build() (*bytes.Buffer, boundary, error) {
+func (m *builder) Build() (*rawForm, error) {
 	err := m.formWriter.Close()
 	if err != nil {
-		return nil, "", err
+		return nil, err
 	}
 
-	return m.buffer, boundary(m.formWriter.Boundary()), nil
+	return &rawForm{
+		buffer:   m.buffer,
+		boundary: boundary(m.formWriter.Boundary()),
+	}, nil
 }
