@@ -52,7 +52,13 @@ func Bind(form *multipart.Form, target interface{}) error {
 			return errors.Errorf("field %s is missing", tagValue)
 		}
 
-		structFieldValue.Set(reflect.ValueOf(formFieldValue[0]))
+		if structFieldValue.Kind() == reflect.Ptr {
+			value := formFieldValue[0]
+			structFieldValue.Set(reflect.ValueOf(&value))
+		} else {
+			structFieldValue.Set(reflect.ValueOf(formFieldValue[0]))
+		}
+
 	}
 	return nil
 }
