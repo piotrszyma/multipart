@@ -1,14 +1,22 @@
 package multipart_test
 
 import (
+	"io"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 
 	"github.com/piotrszyma/multipart"
-	"github.com/piotrszyma/multipart/pkg/fileutil"
 	"github.com/piotrszyma/multipart/pkg/formbuilder"
 )
+
+func ReadToString(r io.Reader) string {
+	data, err := io.ReadAll(r)
+	if err != nil {
+		panic(err)
+	}
+	return string(data)
+}
 
 func TestBindMultipart_StringPointer_Binds(t *testing.T) {
 	// Arrange.
@@ -84,5 +92,5 @@ func TestMultipartRequest_File_Binds(t *testing.T) {
 	require.Equal(t, "file.txt", formData.File1.Filename)
 	file, err := formData.File1.Open()
 	require.NoError(t, err)
-	require.Equal(t, "test file data", fileutil.ToString(file))
+	require.Equal(t, "test file data", ReadToString(file))
 }
