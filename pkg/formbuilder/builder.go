@@ -25,6 +25,16 @@ func (m *builder) AddStringField(fieldname, value string) *builder {
 	return m
 }
 
+func (m *builder) AddFileField(fieldname, filename string, filecontent []byte) *builder {
+	writer, err := m.formWriter.CreateFormFile(fieldname, filename)
+	if err != nil {
+		panic(err)
+	}
+
+	writer.Write(filecontent)
+	return m
+}
+
 func (m *builder) Build() (*rawForm, error) {
 	err := m.formWriter.Close()
 	if err != nil {
